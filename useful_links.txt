@@ -1,0 +1,9 @@
+https://towardsdatascience.com/detecting-faces-with-python-and-opencv-face-detection-neural-network-f72890ae531c
+
+https://machinelearningmastery.com/how-to-perform-face-detection-with-classical-and-deep-learning-methods-in-python-with-keras/
+
+https://machinelearningmastery.com/introduction-to-deep-learning-for-face-recognition/
+
+https://www.researchgate.net/publication/258312237_Face_Recognition_Using_Artificial_Neural_Networks
+
+https://medium.com/@ageitgey/machine-learning-is-fun-part-4-modern-face-recognition-with-deep-learning-c3cffc121d78
