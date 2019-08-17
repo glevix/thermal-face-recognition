@@ -32,7 +32,7 @@ def read_image(filename, representation):
 
 def load_dataset(filenames, batch_size, path_mapping, crop_size):
     s_cache = dict()
-	t_cache = dict()
+    t_cache = dict()
     while True:
         # randomly choose batch_size filenames
         names = list()
@@ -40,24 +40,25 @@ def load_dataset(filenames, batch_size, path_mapping, crop_size):
             names.append(random.choice(filenames))
         # create set of source images (from cache or directly)
         s_images = list()
-		t_images = list()
+        t_images = list()
         for name in names:
             if name not in s_cache:
+                print(name)
                 s_cache[name] = read_image(name, GREYSCALE)
-				t_cache[name] = read_image(utils.v_to_t(name), GREYSCALE)
+                t_cache[name] = read_image(utils.v_to_t(name), GREYSCALE)
             s_images.append(s_cache[name])
-			t_images.append(t_cache[name])
+            t_images.append(t_cache[name])
         # populate arrays
         source = np.ndarray((batch_size, crop_size[0], crop_size[1], 1))
         target = np.ndarray((batch_size, crop_size[0], crop_size[1], 1))
         i = 0
-		for index in range(len(s_images)):
+        for index in range(len(s_images)):
             # sample a large random crop
-            h = random.randint(0, s_image[index].shape[0] - (crop_size[0] * 3))
-            w = random.randint(0, s_image[index].shape[1] - (crop_size[1] * 3))
-            large_s = s_image[index][h:h + (crop_size[0] * 3), w:w + (crop_size[1] * 3)]
+            h = random.randint(0, s_images[index].shape[0] - (crop_size[0] * 3))
+            w = random.randint(0, s_images[index].shape[1] - (crop_size[1] * 3))
+            large_s = s_images[index][h:h + (crop_size[0] * 3), w:w + (crop_size[1] * 3)]
             # apply corruption function
-            large_t = t_image[index][h:h + (crop_size[0] * 3), w:w + (crop_size[1] * 3)]
+            large_t = t_images[index][h:h + (crop_size[0] * 3), w:w + (crop_size[1] * 3)]
             # take a random crop of requested size from original crop and corrupted crop
             h = random.randint(0, large_s.shape[0] - (crop_size[0]))
             w = random.randint(0, large_s.shape[1] - (crop_size[1]))
@@ -121,7 +122,7 @@ def generate_image(corrupted_image, base_model):
 
 
 def learn_thermal_to_visual(num_res_blocks=5, quick_mode=False):
-    paths = utils.visual_images()
+    paths = utils.visible_images()
     batch_size, steps_per_epoch, num_epochs, num_samples = 100, 100, 5, 1000
     if quick_mode:
         batch_size, steps_per_epoch, num_epochs, num_samples = 10, 3, 2, 30
@@ -132,8 +133,10 @@ def learn_thermal_to_visual(num_res_blocks=5, quick_mode=False):
 
 
 def test_thermal_to_visual():
-	visual_path = utils.thermal_images()[0]
-	thermal_path = utils.v_to_t(visual_path)
+    visual_path = utils.visible_images()[0]
+    print(visual_path)
+    thermal_path = utils.v_to_t(visual_path)
+    print(thermal_path)
     visual_im = read_image(visual_path, GREYSCALE)
     thermal_im = read_image(thermal_path, GREYSCALE)
     plt.imshow(visual_im, cmap='gray')

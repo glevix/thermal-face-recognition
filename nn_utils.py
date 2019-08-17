@@ -20,7 +20,7 @@ def list_images(path, use_shuffle=True):
     use_shuffle -- option to shuffle order of files. Uses a fixed shuffled order.
     """
     def is_image(filename):
-        return os.path.splitext(filename)[-1][1:].lower() in ['jpg', 'png']
+        return os.path.splitext(filename)[-1][1:].lower() in ['jpg', 'png', 'bmp']
     images = list(map(lambda x: os.path.join(path, x), filter(is_image, os.listdir(path))))
     # Shuffle with a fixed seed without affecting global state
     if use_shuffle:
@@ -43,10 +43,10 @@ def visible_images():
 
 def v_to_t(visual_path):
 	"""returns path of thermal image corresponding to the given visual image path"""
-	return visual_path.replace('color', 'thermal')
+	return visual_path.replace('color', 'thermal').replace('V', 'L')
 
 
 def t_to_v(thermal_path):
 	"""returns path of visual image corresponding to the given thermal image path"""
-	return visual_path.replace('thermal', 'color')
+	return visual_path.replace('thermal', 'color').replace('L', 'V')
 
