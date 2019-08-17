@@ -43,7 +43,6 @@ def load_dataset(filenames, batch_size, path_mapping, crop_size):
         t_images = list()
         for name in names:
             if name not in s_cache:
-                print(name)
                 s_cache[name] = read_image(name, GREYSCALE)
                 t_cache[name] = read_image(utils.v_to_t(name), GREYSCALE)
             s_images.append(s_cache[name])
