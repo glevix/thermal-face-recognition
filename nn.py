@@ -56,7 +56,6 @@ def load_dataset(filenames, batch_size, path_mapping, crop_size):
             h = random.randint(0, s_images[index].shape[0] - (crop_size[0] * 3))
             w = random.randint(0, s_images[index].shape[1] - (crop_size[1] * 3))
             large_s = s_images[index][h:h + (crop_size[0] * 3), w:w + (crop_size[1] * 3)]
-            # apply corruption function
             large_t = t_images[index][h:h + (crop_size[0] * 3), w:w + (crop_size[1] * 3)]
             # take a random crop of requested size from original crop and corrupted crop
             h = random.randint(0, large_s.shape[0] - (crop_size[0]))
@@ -99,22 +98,22 @@ def _split(filenames):
     return aux[:cut], aux[cut:]
 
 
-def train_model(model, images, corruption_func, batch_size, steps_per_epoch, num_epochs, num_valid_samples):
+def train_model(model, images, path_map, batch_size, steps_per_epoch, num_epochs, num_valid_samples):
     training_set, validation_set = _split(images)
     crop_size = model.input_shape[1:3]
-    training_gen = load_dataset(training_set, batch_size, corruption_func, crop_size)
-    validation_gen = load_dataset(validation_set, batch_size, corruption_func, crop_size)
+    training_gen = load_dataset(training_set, batch_size, path_map, crop_size)
+    validation_gen = load_dataset(validation_set, batch_size, path_map, crop_size)
     model.compile(loss='mean_squared_error', optimizer=Adam(beta_2=0.9))
     model.fit_generator(training_gen, steps_per_epoch=steps_per_epoch, epochs=num_epochs,
                         validation_data=validation_gen, validation_steps=num_valid_samples//batch_size)
 
 
-def generate_image(corrupted_image, base_model):
-    shape = corrupted_image.shape
+def generate_image(input_image, base_model):
+    shape = input_image.shape
     input_tensor = Input((shape[0], shape[1], 1))
     b = base_model(input_tensor)
     new_model = Model(inputs=input_tensor, outputs=b)
-    input_image = corrupted_image - 0.5
+    input_image = input_image - 0.5
     output_image = new_model.predict(input_image[np.newaxis, :, :, np.newaxis])[0] + 0.5
     output_image = np.clip(output_image, 0, 1).astype(np.float64)
     return output_image[:, :, 0]
